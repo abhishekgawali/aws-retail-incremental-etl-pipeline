@@ -11,16 +11,27 @@ validation, making it suitable for large-scale retail datasets.
 ---
 
 ## Architecture
-```text
-AWS RDS (MySQL)
-   → AWS Glue (Incremental PySpark Job)
-   → Amazon S3 (Landing Zone)
-   → AWS Lambda (S3 Event Trigger)
-   → AWS Glue (Data Quality Checks)
-      ├── S3 Staging (Valid Records)
-      └── S3 Discarded (Invalid Records)
-   → AWS Glue Data Catalog
-   → Amazon Athena
+
+```mermaid
+architecture-beta
+    service rds(database) [AWS RDS (MySQL)]
+    service glue1(server) [AWS Glue - Incremental Job]
+    service s3(bucket) [Amazon S3 - Landing]
+    service lambda(server) [AWS Lambda Trigger]
+    service glue2(server) [AWS Glue - Data Quality]
+    service s3good(bucket) [S3 Staging]
+    service s3bad(bucket) [S3 Discarded]
+    service catalog(database) [Glue Data Catalog]
+    service athena(analytics) [Amazon Athena]
+
+    rds --> glue1
+    glue1 --> s3
+    s3 --> lambda
+    lambda --> glue2
+    glue2 --> s3good
+    glue2 --> s3bad
+    s3good --> catalog
+    catalog --> athena
 ```
 ## Project Structure
 ```text
