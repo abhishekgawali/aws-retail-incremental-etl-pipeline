@@ -1,0 +1,143 @@
+
+CREATE TABLE orders (
+    order_id INT,              
+    order_last_updated DATETIME,          
+    customer_id INT,               
+    order_status VARCHAR(25)
+);
+
+INSERT INTO orders (order_id, order_last_updated, customer_id, order_status) VALUES
+(1, '2024-07-31 08:15:23', 11599, 'CLOSED'),
+(2, '2024-07-31 09:30:45', 256, 'PENDING_PAYMENT'),
+(3, '2024-07-31 10:45:00', 12111, 'COMPLETE'),
+(4, '2024-07-31 11:05:12', 8827, 'CLOSED'),
+(5, '2024-07-31 12:22:33', 11318, 'COMPLETE'),
+(6, '2024-07-31 13:14:50', 7130, 'COMPLETE'),
+(7, '2024-07-31 14:37:29', 4530, 'COMPLETE'),
+(8, '2024-07-31 15:48:05', 2911, 'PROCESSING'),
+(9, '2024-07-31 16:22:40', 5657, 'PENDING_PAYMENT'),
+(10, '2024-07-31 17:50:18', 5648, 'PENDING_PAYMENT');
+
+
+
+order_item_id,order_item_order_id,product_id,quantity,total_amount,price
+1,1,957,1,299.98,299.98
+2,2,1073,1,199.99,199.99
+3,2,502,5,250.0,50.0
+4,2,403,1,129.99,129.99
+5,4,897,2,49.98,24.99
+6,4,365,5,299.95,59.99
+7,4,502,3,150.0,50.0
+8,4,1014,4,199.92,49.98
+
+
+
+INSERT INTO orders VALUES
+(11, '2024-08-01 08:15:23', 918, 'PAYMENT_REVIEW');
+
+
+CREATE TABLE fetch_details(
+    metadata_id INT AUTO_INCREMENT PRIMARY KEY,  
+    tablename VARCHAR(255) NOT NULL,            
+    last_fetched DATETIME NOT NULL,             
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
+insert into fetch_details (tablename, last_fetched) values('orders','1900-01-01 00:00:00');
+
+==========
+
+'ON_HOLD',
+'PAYMENT_REVIEW','PROCESSING','CLOSED','SUSPECTED_FRAUD','COMPLETE',
+'PENDING','CANCELED','PENDING_PAYMENT'
+
+
+
+# Define a function to move files from one S3 location to another
+def move_files(src_folder, dest_folder, archive_folder):
+    # List objects in the source folder
+    response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=src_folder)
+    
+    # Check if there are any files in the source folder
+    if 'Contents' in response:
+        # Iterate over each object and move it to the destination and archive
+        for obj in response['Contents']:
+            source_key = obj['Key']
+            
+            # Avoid processing the directory itself (only process files)
+            if not source_key.endswith('/'):
+                destination_key = source_key.replace(src_folder, dest_folder)
+                archive_key = source_key.replace(src_folder, archive_folder)
+
+                # Copy file to the destination folder
+                s3_client.copy_object(CopySource={'Bucket': bucket_name, 'Key': source_key}, Bucket=bucket_name, Key=destination_key)
+                
+                # Copy file to the archive folder
+                s3_client.copy_object(CopySource={'Bucket': bucket_name, 'Key': source_key}, Bucket=bucket_name, Key=archive_key)
+                
+                # Delete the original file to complete the move operation
+                s3_client.delete_object(Bucket=bucket_name, Key=source_key)
+
+if invalid_count > 0:
+    print(f"Found {invalid_count} invalid records. Moving files to 'discarded' folder.")
+    move_files(landing_folder, discarded_folder, archive_folder)
+else:
+    print("No invalid records found. Moving files to 'staging' folder.")
+    move_files(landing_folder, staging_folder, archive_folder)
+
+print("File movement complete.")
+
+
+
+use retaildb;
+
+create table valid_order_status_lk (status_name varchar(25));
+
+insert into valid_order_status_lk values
+('ON_HOLD'),('PAYMENT_REVIEW'),('PROCESSING'),
+('CLOSED'),('SUSPECTED_FRAUD'),('COMPLETE'),
+('PENDING'),('CANCELED'),('PENDING_PAYMENT');
+
+
+==========
+
+# List all objects in the folder
+response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=folder_prefix)
+
+# Check if there are any contents
+if 'Contents' in response:
+    for item in response['Contents']:
+        print(f"Deleting {item['Key']}")
+        s3_client.delete_object(Bucket=bucket_name, Key=item['Key'])
+
+print("All files deleted from the folder.")
+
+
+===========
+
+INSERT INTO orders (order_id, order_last_updated, customer_id, order_status) VALUES
+(11, '2024-08-03 08:15:30', 918, 'PAYMENT_REVIEW'),
+(12, '2024-08-03 10:45:12', 1837, 'CLOSED'),
+(13, '2024-08-03 14:20:55', 9149, 'PENDING_PAYMENT'),
+(14, '2024-08-03 16:05:10', 9842, 'PROCESSING'),
+(15, '2024-08-03 09:50:25', 2568, 'COMPLETE'),
+(16, '2024-08-03 11:30:40', 7276, 'PENDING_PAYMENT'),
+(17, '2024-08-03 13:15:05', 2667, 'COMPLETE'),
+(18, '2024-08-03 15:45:30', 1205, 'CLOSED'),
+(19, '2024-08-03 17:10:15', 9488, 'PENDING_PAYMENT'),
+(20, '2024-08-03 18:25:50', 9198, 'PROCESSING');
+
+
+
+
+
+
+
+
+
+
+
+
+
