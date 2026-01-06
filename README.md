@@ -21,3 +21,20 @@ AWS RDS (MySQL)
       └── S3 Discarded (Invalid Records)
    → AWS Glue Data Catalog
    → Amazon Athena
+```
+## Project Structure
+
+aws-retail-incremental-etl-pipeline/
+├── glue_jobs/
+│   ├── rds_to_s3_incremental.py
+│   └── data_quality_checks.py
+├── lambda/
+│   └── trigger_glue_job.py
+├── sql/
+│   ├── create_metadata_table.sql
+│   └── create_orders_table.sql
+├── docs/
+│   ├── architecture.md
+│   └── incremental_loading.md
+└── README.md
+
