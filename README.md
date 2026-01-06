@@ -11,28 +11,28 @@ validation, making it suitable for large-scale retail datasets.
 ---
 
 ## Architecture
+## Architecture
 
 ```mermaid
 architecture-beta
-    service rds(database) [AWS RDS (MySQL)]
-    service glue1(server) [AWS Glue - Incremental Job]
-    service s3(bucket) [Amazon S3 - Landing]
-    service lambda(server) [AWS Lambda Trigger]
-    service glue2(server) [AWS Glue - Data Quality]
-    service s3good(bucket) [S3 Staging]
-    service s3bad(bucket) [S3 Discarded]
-    service catalog(database) [Glue Data Catalog]
-    service athena(analytics) [Amazon Athena]
+    service rds(database)
+    service glue_ingest(server)
+    service s3_landing(bucket)
+    service lambda_trigger(server)
+    service glue_qc(server)
+    service s3_staging(bucket)
+    service s3_discarded(bucket)
+    service glue_catalog(database)
+    service athena(analytics)
 
-    rds --> glue1
-    glue1 --> s3
-    s3 --> lambda
-    lambda --> glue2
-    glue2 --> s3good
-    glue2 --> s3bad
-    s3good --> catalog
-    catalog --> athena
-```
+    rds --> glue_ingest
+    glue_ingest --> s3_landing
+    s3_landing --> lambda_trigger
+    lambda_trigger --> glue_qc
+    glue_qc --> s3_staging
+    glue_qc --> s3_discarded
+    s3_staging --> glue_catalog
+    glue_catalog --> athena
 ## Project Structure
 ```text
 aws-retail-incremental-etl-pipeline/
