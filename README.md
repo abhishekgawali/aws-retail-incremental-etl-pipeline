@@ -14,26 +14,17 @@ validation, making it suitable for large-scale retail datasets.
 
 ## Architecture
 
-```mermaid
-flowchart TB
-    RDS[AWS RDS (MySQL)]
-    GLUE1[AWS Glue<br/>Incremental PySpark Job]
-    S3L[S3 Landing Zone]
-    LAMBDA[AWS Lambda<br/>S3 Event Trigger]
-    GLUE2[AWS Glue<br/>Data Quality Checks]
-    S3S[S3 Staging<br/>(Valid Records)]
-    S3D[S3 Discarded<br/>(Invalid Records)]
-    CATALOG[AWS Glue Data Catalog]
-    ATHENA[Amazon Athena]
 
-    RDS --> GLUE1
-    GLUE1 --> S3L
-    S3L --> LAMBDA
-    LAMBDA --> GLUE2
-    GLUE2 --> S3S
-    GLUE2 --> S3D
-    S3S --> CATALOG
-    CATALOG --> ATHENA
+```text
+AWS RDS (MySQL)
+   → AWS Glue (Incremental PySpark Job)
+   → Amazon S3 (Landing Zone)
+   → AWS Lambda (S3 Event Trigger)
+   → AWS Glue (Data Quality Checks)
+      ├── S3 Staging (Valid Records)
+      └── S3 Discarded (Invalid Records)
+   → AWS Glue Data Catalog
+   → Amazon Athena
 ```
 
 
