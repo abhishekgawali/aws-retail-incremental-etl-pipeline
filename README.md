@@ -23,7 +23,7 @@ AWS RDS (MySQL)
    → Amazon Athena
 ```
 ## Project Structure
-
+```text
 aws-retail-incremental-etl-pipeline/
 ├── glue_jobs/
 │   ├── rds_to_s3_incremental.py
@@ -37,4 +37,4 @@ aws-retail-incremental-etl-pipeline/
 │   ├── architecture.md
 │   └── incremental_loading.md
 └── README.md
-
+```
